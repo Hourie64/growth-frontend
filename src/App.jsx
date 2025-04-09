@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 
 const API_URL = "https://growth-backend-udim.onrender.com/api/posts";
@@ -6,11 +7,11 @@ export default function App() {
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState("");
 
-  // Charger les posts à l'affichage
   useEffect(() => {
     fetch(API_URL)
       .then((res) => res.json())
-      .then(setPosts);
+      .then(setPosts)
+      .catch((err) => console.error("Erreur chargement posts :", err));
   }, []);
 
   const handleSubmit = async (e) => {
@@ -18,19 +19,22 @@ export default function App() {
     const body = {
       title: "Post automatique",
       content: newPost,
-      author_id: "demo-user", // à remplacer plus tard par l'ID Supabase réel
+      author_id: "demo-user"
     };
 
-    await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
+    try {
+      await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
 
-    // Recharge les posts
-    const updated = await fetch(API_URL).then((res) => res.json());
-    setPosts(updated);
-    setNewPost("");
+      const updated = await fetch(API_URL).then((res) => res.json());
+      setPosts(updated);
+      setNewPost("");
+    } catch (error) {
+      console.error("Erreur publication :", error);
+    }
   };
 
   return (
@@ -61,7 +65,7 @@ export default function App() {
             <h2 className="font-semibold">{post.title}</h2>
             <p>{post.content}</p>
             <p className="text-sm text-gray-500 mt-1">
-              Auteur : {post.author?.name || "Inconnu"}
+              Auteur : {post.author_id || "Anonyme"}
             </p>
           </article>
         ))}
