@@ -11,7 +11,7 @@ export default function App() {
     fetch(API_URL)
       .then((res) => res.json())
       .then(setPosts)
-      .catch((err) => console.err or("Erreur chargement posts :", err));
+      .catch((err) => console.error("Erreur chargement posts :", err));
   }, []);
 
   const handleSubmit = async (e) => {
