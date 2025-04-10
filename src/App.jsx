@@ -17,9 +17,8 @@ export default function App() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const body = {
-      title: "Post automatique",
       content: newPost,
-      author_id: "demo-user"
+      author_id: "demo-user-id"
     };
 
     try {
@@ -40,17 +39,17 @@ export default function App() {
   return (
     <main className="max-w-xl mx-auto p-4 font-sans">
       <h1 className="text-2xl font-semibold mb-4 text-center">GROWTH 🌱</h1>
-      
+
       <form onSubmit={handleSubmit} className="mb-6">
         <textarea
           className="w-full p-2 border border-gray-300 rounded mb-2"
-          placeholder="Écrivez une actu ou une idée..."
+          placeholder="Exprimez une idée ou une actualité..."
           value={newPost}
           onChange={(e) => setNewPost(e.target.value)}
         />
         <button
           type="submit"
-          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
         >
           Publier
         </button>
@@ -60,12 +59,11 @@ export default function App() {
         {posts.map((post) => (
           <article
             key={post.id}
-            className="border border-gray-200 p-3 rounded shadow-sm bg-white"
+            className="border border-gray-300 p-4 rounded bg-white shadow-sm"
           >
-            <h2 className="font-semibold">{post.title}</h2>
-            <p>{post.content}</p>
-            <p className="text-sm text-gray-500 mt-1">
-              Auteur : {post.author_id || "Anonyme"}
+            <p className="mb-2">{post.content}</p>
+            <p className="text-sm text-gray-500">
+              Publié par {post.author_name || "anonyme"} le {new Date(post.created_at).toLocaleString()}
             </p>
           </article>
         ))}
