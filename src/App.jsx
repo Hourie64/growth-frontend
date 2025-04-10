@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 
 const API_URL = "https://growth-backend-udim.onrender.com/api/posts";
@@ -7,6 +6,7 @@ export default function App() {
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState("");
 
+  // Charger les posts
   useEffect(() => {
     fetch(API_URL)
       .then((res) => res.json())
@@ -14,36 +14,33 @@ export default function App() {
       .catch((err) => console.error("Erreur chargement posts :", err));
   }, []);
 
+  // Envoyer un post
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const body = {
-      content: newPost,
-      author_id: "demo-user-id"
-    };
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        content: newPost,
+        author_id: "00000000-0000-0000-0000-000000000001" // ← à remplacer par un vrai ID d’utilisateur
+      }),
+    });
 
-    try {
-      await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body)
-      });
-
-      const updated = await fetch(API_URL).then((res) => res.json());
+    if (res.ok) {
+      const updated = await fetch(API_URL).then((r) => r.json());
       setPosts(updated);
       setNewPost("");
-    } catch (error) {
-      console.error("Erreur publication :", error);
     }
   };
 
   return (
-    <main className="max-w-xl mx-auto p-4 font-sans">
-      <h1 className="text-2xl font-semibold mb-4 text-center">GROWTH 🌱</h1>
+    <main className="max-w-xl mx-auto p-6 font-sans">
+      <h1 className="text-2xl font-bold text-center mb-6">GROWTH 🌱</h1>
 
       <form onSubmit={handleSubmit} className="mb-6">
         <textarea
-          className="w-full p-2 border border-gray-300 rounded mb-2"
-          placeholder="Exprimez une idée ou une actualité..."
+          className="w-full p-3 border border-gray-300 rounded mb-2"
+          placeholder="Exprime ton idée ici..."
           value={newPost}
           onChange={(e) => setNewPost(e.target.value)}
         />
@@ -57,13 +54,10 @@ export default function App() {
 
       <section className="space-y-4">
         {posts.map((post) => (
-          <article
-            key={post.id}
-            className="border border-gray-300 p-4 rounded bg-white shadow-sm"
-          >
-            <p className="mb-2">{post.content}</p>
+          <article key={post.id} className="border p-4 rounded bg-white shadow-sm">
+            <p className="mb-1">{post.content}</p>
             <p className="text-sm text-gray-500">
-              Publié par {post.author_name || "anonyme"} le {new Date(post.created_at).toLocaleString()}
+              {new Date(post.created_at).toLocaleString()}
             </p>
           </article>
         ))}
@@ -71,6 +65,3 @@ export default function App() {
     </main>
   );
 }
-// Trigger redeploy
-// Force redeploy
-
