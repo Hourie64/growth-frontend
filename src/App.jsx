@@ -59,7 +59,11 @@ export default function App() {
 
 
           <p className="mb-1">{post.content}</p>
-                      <p className="text-sm text-gray-600 italic flex items-center gap-2">
+          <p className="text-xs text-gray-500 italic">
+  Catégorie : {post.category || "Sans catégorie"}
+</p>
+
+         <p className="text-sm text-gray-600 italic flex items-center gap-2">
   {post.users?.avatar_url && (
     <img
       src={post.users.avatar_url}
