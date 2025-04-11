@@ -53,9 +53,6 @@ export default function App() {
     <div className="space-y-6">
       {[...posts].reverse().map((post) => (
         <div key={post.id} className="border-b pb-4">
-          <p className="text-sm text-blue-600 font-medium">
-  Catégorie : {post.category || "Non renseignée"}
-</p>
 
 
           <p className="mb-1">{post.content}</p>
@@ -81,11 +78,7 @@ export default function App() {
               minute: "2-digit",
             })}
           </p>
-          <p className="text-xs text-gray-500 italic">
-  Catégorie : {post.category || "Sans catégorie"}
-</p>
-
-        </div>
+                  </div>
       ))}
     </div>
   </main>
