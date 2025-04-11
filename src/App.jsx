@@ -53,6 +53,10 @@ export default function App() {
     <div className="space-y-6">
       {[...posts].reverse().map((post) => (
         <div key={post.id} className="border-b pb-4">
+          {post.category && (
+  <p className="text-sm text-blue-600 font-medium">Catégorie : {post.category}</p>
+)}
+
           <p className="mb-1">{post.content}</p>
                       <p className="text-sm text-gray-600 italic flex items-center gap-2">
   {post.users?.avatar_url && (
