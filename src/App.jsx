@@ -61,9 +61,22 @@ export default function App() {
 </p>
 
          <p className="text-sm text-gray-600 italic flex items-center gap-2">
-  {post.users?.avatar_url && (
-    <img
-      src={post.users.avatar_url}
+{post.users?.avatar_url ? (
+  <img
+    src={post.users.avatar_url}
+    alt="avatar"
+    className="w-6 h-6 rounded-full"
+  />
+) : (
+  <img
+    src="https://via.placeholder.com/48"
+    alt="avatar par défaut"
+    className="w-6 h-6 rounded-full opacity-50"
+  />
+)}
+
+)
+
       alt="avatar"
       className="w-6 h-6 rounded-full"
     />
