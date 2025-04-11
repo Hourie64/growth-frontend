@@ -72,6 +72,10 @@ export default function App() {
               minute: "2-digit",
             })}
           </p>
+          <p className="text-xs text-gray-500 italic">
+  Catégorie : {post.category || "Sans catégorie"}
+</p>
+
         </div>
       ))}
     </div>
