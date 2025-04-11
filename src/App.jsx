@@ -35,38 +35,38 @@ export default function App() {
   }, []);
 
   return (
-    <main className="max-w-xl mx-auto p-6 font-sans">
-      <h1 className="text-2xl font-bold text-center mb-6">GROWTH 🌱</h1>
+  <main className="max-w-xl mx-auto p-6 font-sans">
+    <h1 className="text-2xl font-bold text-center mb-6">GROWTH 🌱</h1>
 
-      <form onSubmit={handleSubmit} className="mb-6">
-        <textarea
-          className="w-full p-3 border border-gray-300 rounded mb-2"
-          placeholder="Exprime ton idée ici..."
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-        />
-        <button
-          type="submit"
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-        >
-          Publier
-        </button>
-      </form>
+    <form onSubmit={handleSubmit} className="mb-6">
+      <textarea
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        placeholder="Exprime ton idée ici..."
+        className="w-full border p-2 mb-2"
+      />
+      <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded">
+        Publier
+      </button>
+    </form>
 
-      <section className="space-y-4">
-        {posts.map((post) => (
-          <article key={post.id} className="border p-4 rounded bg-white shadow-sm">
-            <p className="mb-1">{post.content}</p>
-            <p className="text-sm text-gray-500">
-              {post.users?.full_name
-                ? `Publié par ${post.users.full_name}`
-                : "Publié par un utilisateur"}
-              {" – "}
-              {new Date(post.created_at).toLocaleString()}
-            </p>
-          </article>
-        ))}
-      </section>
-    </main>
-  );
-}
+    <div className="space-y-6">
+      {[...posts].reverse().map((post) => (
+        <div key={post.id} className="border-b pb-4">
+          <p className="mb-1">{post.content}</p>
+          <p className="text-sm text-gray-600 italic">
+            Publié par <strong>{post.users?.full_name || "Anonyme"}</strong> –{" "}
+            {new Date(post.created_at).toLocaleString("fr-FR", {
+              day: "2-digit",
+              month: "long",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </p>
+        </div>
+      ))}
+    </div>
+  </main>
+);
+
