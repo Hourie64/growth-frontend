@@ -1,12 +1,28 @@
 import { useEffect, useState } from "react";
+import { supabase } from "./supabaseClient";
+import Auth from "./Auth";
 
 const API_URL = "https://growth-backend-udim.onrender.com/api/posts";
 
 export default function App() {
+  const [session, setSession] = useState(null);
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState("");
 
-  // Charger les posts
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, []);
+
   useEffect(() => {
     fetch(API_URL)
       .then((res) => res.json())
@@ -14,15 +30,18 @@ export default function App() {
       .catch((err) => console.error("Erreur chargement posts :", err));
   }, []);
 
-  // Envoyer un post
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const user = session?.user;
+
+    if (!user) return;
+
     const res = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         content: newPost,
-        author_id: "00000000-0000-0000-0000-000000000001" // ← à remplacer par un vrai ID d’utilisateur
+        author_id: user.id,
       }),
     });
 
@@ -32,6 +51,10 @@ export default function App() {
       setNewPost("");
     }
   };
+
+  if (!session) {
+    return <Auth onLogin={() => {}} />;
+  }
 
   return (
     <main className="max-w-xl mx-auto p-6 font-sans">
