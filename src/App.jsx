@@ -1,90 +1,72 @@
-import { useEffect, useState } from "react";
-import { supabase } from "./supabaseClient";
-import Auth from "./Auth";
+import React, { useState, useEffect } from 'react';
 
-const API_URL = "https://growth-backend-udim.onrender.com/api/posts";
-
-export default function App() {
-  const [session, setSession] = useState(null);
+function App() {
   const [posts, setPosts] = useState([]);
-  const [newPost, setNewPost] = useState("");
+  const [content, setContent] = useState('');
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
-    return () => {
-      listener.subscription.unsubscribe();
-    };
-  }, []);
-
-  useEffect(() => {
-    fetch(API_URL)
-      .then((res) => res.json())
-      .then(setPosts)
-      .catch((err) => console.error("Erreur chargement posts :", err));
-  }, []);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const user = session?.user;
-
-    if (!user) return;
-
-    const res = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        content: newPost,
-        author_id: user.id,
-      }),
-    });
-
-    if (res.ok) {
-      const updated = await fetch(API_URL).then((r) => r.json());
-      setPosts(updated);
-      setNewPost("");
+  // Appel API pour charger les posts
+  const fetchPosts = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/posts`);
+      const data = await response.json();
+      setPosts(data);
+    } catch (error) {
+      console.error('Erreur lors de la récupération des posts :', error);
     }
   };
 
-  if (!session) {
-    return <Auth onLogin={() => {}} />;
-  }
+  // Envoi d’un nouveau post
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/posts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ content }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur serveur');
+      }
+
+      setContent('');
+      fetchPosts();
+    } catch (error) {
+      console.error('Erreur lors de l’envoi du post :', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
 
   return (
-    <main className="max-w-xl mx-auto p-6 font-sans">
-      <h1 className="text-2xl font-bold text-center mb-6">GROWTH 🌱</h1>
-
-      <form onSubmit={handleSubmit} className="mb-6">
+    <div>
+      <h1>GROWTH 🌱</h1>
+      <form onSubmit={handleSubmit}>
         <textarea
-          className="w-full p-3 border border-gray-300 rounded mb-2"
           placeholder="Exprime ton idée ici..."
-          value={newPost}
-          onChange={(e) => setNewPost(e.target.value)}
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
         />
-        <button
-          type="submit"
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-        >
-          Publier
-        </button>
+        <button type="submit">Publier</button>
       </form>
 
-      <section className="space-y-4">
-        {posts.map((post) => (
-          <article key={post.id} className="border p-4 rounded bg-white shadow-sm">
-            <p className="mb-1">{post.content}</p>
-            <p className="text-sm text-gray-500">
-              {new Date(post.created_at).toLocaleString()}
-            </p>
-          </article>
-        ))}
-      </section>
-    </main>
+      {posts.map((post) => (
+        <div key={post.id}>
+          <p>{post.content}</p>
+          <p>
+            {post.users?.full_name
+              ? `Publié par ${post.users.full_name}`
+              : 'Publié par anonyme'}{' '}
+            le {new Date(post.created_at).toLocaleString()}
+          </p>
+        </div>
+      ))}
+    </div>
   );
 }
+
+export default App;
