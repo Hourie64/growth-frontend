@@ -18,7 +18,8 @@ export default function App() {
     const res = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ content }),
+     body: JSON.stringify({ title: "Post sans titre", content }),
+
     });
 
     if (res.ok) {
