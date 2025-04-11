@@ -54,8 +54,16 @@ export default function App() {
       {[...posts].reverse().map((post) => (
         <div key={post.id} className="border-b pb-4">
           <p className="mb-1">{post.content}</p>
-          <p className="text-sm text-gray-600 italic">
-            Publié par <strong>{post.users?.full_name || "Anonyme"}</strong> –{" "}
+                      <p className="text-sm text-gray-600 italic flex items-center gap-2">
+  {post.users?.avatar_url && (
+    <img
+      src={post.users.avatar_url}
+      alt="avatar"
+      className="w-6 h-6 rounded-full"
+    />
+  )}
+  Publié par <strong>{post.users?.full_name || "Anonyme"}</strong> –{" "}
+
             {new Date(post.created_at).toLocaleString("fr-FR", {
               day: "2-digit",
               month: "long",
