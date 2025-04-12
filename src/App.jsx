@@ -35,22 +35,23 @@ export default function App() {
   }, []);
 
 return (
-  <main className="max-w-2xl mx-auto py-8 px-4 font-sans bg-white text-gray-900">
-    <h1 className="text-4xl font-semibold mb-6 tracking-tight flex items-center gap-2">
-      GROWTH <span className="text-2xl">🌱</span>
+  <main className="max-w-2xl mx-auto p-6 font-sans text-gray-800">
+    <h1 className="text-3xl font-bold mb-8 flex items-center gap-2">
+      🪴 GROWTH
     </h1>
 
-    <form onSubmit={handleSubmit} className="mb-8">
+    <form onSubmit={handleSubmit} className="mb-8 space-y-4">
+      <label className="block text-lg font-medium">💬 Exprime ton idée</label>
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
         placeholder="Exprime ton idée ici..."
-        className="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-        rows={3}
+        className="w-full border border-gray-300 rounded-lg p-4 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+        rows={4}
       />
       <button
         type="submit"
-        className="mt-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+        className="bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 transition"
       >
         Publier
       </button>
@@ -58,9 +59,13 @@ return (
 
     <div className="space-y-6">
       {[...posts].reverse().map((post) => (
-        <div key={post.id} className="bg-gray-50 p-4 rounded-md shadow-sm">
-          <p className="text-lg mb-2">{post.content}</p>
-          <div className="text-sm text-gray-500 flex items-center gap-2">
+        <div
+          key={post.id}
+          className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm"
+        >
+          <p className="text-lg font-medium">📝 {post.content}</p>
+
+          <div className="flex items-center text-sm text-gray-500 mt-2 gap-2">
             {post.users?.avatar_url ? (
               <img
                 src={post.users.avatar_url}
@@ -68,11 +73,15 @@ return (
                 className="w-6 h-6 rounded-full"
               />
             ) : (
-              <div className="w-6 h-6 rounded-full bg-gray-300" />
+              <img
+                src="https://via.placeholder.com/48"
+                alt="avatar par défaut"
+                className="w-6 h-6 rounded-full opacity-50"
+              />
             )}
             <span>
-              Publié par <strong>{post.users?.full_name || "Anonyme"}</strong>
-              {" — "}
+              👤{" "}
+              <strong>{post.users?.full_name || "Anonyme"}</strong> • 📅{" "}
               {new Date(post.created_at).toLocaleString("fr-FR", {
                 day: "2-digit",
                 month: "long",
@@ -82,13 +91,12 @@ return (
               })}
             </span>
           </div>
-          <p className="mt-1 text-xs text-gray-400">
-            Catégorie : {post.category || "Sans catégorie"}
+
+          <p className="text-xs text-gray-400 mt-2">
+            🏷️ Catégorie : {post.category || "Sans catégorie"}
           </p>
         </div>
       ))}
     </div>
   </main>
 );
-
-
