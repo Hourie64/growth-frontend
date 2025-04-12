@@ -34,66 +34,61 @@ export default function App() {
     fetchPosts();
   }, []);
 
-  return (
-  <main className="max-w-xl mx-auto p-6 font-sans">
-    <h1 className="text-2xl font-bold text-center mb-6">GROWTH 🌱</h1>
+return (
+  <main className="max-w-2xl mx-auto py-8 px-4 font-sans bg-white text-gray-900">
+    <h1 className="text-4xl font-semibold mb-6 tracking-tight flex items-center gap-2">
+      GROWTH <span className="text-2xl">🌱</span>
+    </h1>
 
-    <form onSubmit={handleSubmit} className="mb-6">
+    <form onSubmit={handleSubmit} className="mb-8">
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
         placeholder="Exprime ton idée ici..."
-        className="w-full border p-2 mb-2"
+        className="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+        rows={3}
       />
-      <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded">
+      <button
+        type="submit"
+        className="mt-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+      >
         Publier
       </button>
     </form>
 
     <div className="space-y-6">
       {[...posts].reverse().map((post) => (
-        <div key={post.id} className="border-b pb-4">
-
-
-          <p className="mb-1">{post.content}</p>
-          <p className="text-xs text-gray-500 italic">
-  Catégorie : {post.category || "Sans catégorie"}
-</p>
-
-         <p className="text-sm text-gray-600 italic flex items-center gap-2">
-{post.users?.avatar_url ? (
-  <img
-    src={post.users.avatar_url}
-    alt="avatar"
-    className="w-6 h-6 rounded-full"
-  />
-) : (
-  <img
-    src="https://via.placeholder.com/48"
-    alt="avatar par défaut"
-    className="w-6 h-6 rounded-full opacity-50"
-  />
-)}
-
-)
-
-      alt="avatar"
-      className="w-6 h-6 rounded-full"
-    />
-  )}
-  Publié par <strong>{post.users?.full_name || "Anonyme"}</strong> –{" "}
-
-            {new Date(post.created_at).toLocaleString("fr-FR", {
-              day: "2-digit",
-              month: "long",
-              year: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
+        <div key={post.id} className="bg-gray-50 p-4 rounded-md shadow-sm">
+          <p className="text-lg mb-2">{post.content}</p>
+          <div className="text-sm text-gray-500 flex items-center gap-2">
+            {post.users?.avatar_url ? (
+              <img
+                src={post.users.avatar_url}
+                alt="avatar"
+                className="w-6 h-6 rounded-full"
+              />
+            ) : (
+              <div className="w-6 h-6 rounded-full bg-gray-300" />
+            )}
+            <span>
+              Publié par <strong>{post.users?.full_name || "Anonyme"}</strong>
+              {" — "}
+              {new Date(post.created_at).toLocaleString("fr-FR", {
+                day: "2-digit",
+                month: "long",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </span>
+          </div>
+          <p className="mt-1 text-xs text-gray-400">
+            Catégorie : {post.category || "Sans catégorie"}
           </p>
-                  </div>
+        </div>
       ))}
     </div>
   </main>
 );
+
 
