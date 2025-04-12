@@ -3,43 +3,90 @@ import { supabase } from "./supabaseClient";
 import Auth from "./Auth";
 
 export default function App() {
-  const [session, setSession] = useState(null);
+  const [user, setUser] = useState(null);
+  const [posts, setPosts] = useState([]);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
     });
 
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setUser(session?.user ?? null);
       }
     );
 
-    return () => listener.subscription.unsubscribe();
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
   }, []);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-  };
+  useEffect(() => {
+    fetchPosts();
+  }, []);
 
-  if (!session) return <Auth />;
+  async function fetchPosts() {
+    const { data, error } = await supabase
+      .from("posts")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (!error) setPosts(data);
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    if (!message.trim()) return;
+
+    await supabase.from("posts").insert([
+      {
+        content: message,
+        user_name: user?.user_metadata?.name || "Utilisateur par défaut",
+      },
+    ]);
+
+    setMessage("");
+    fetchPosts();
+  }
+
+  function handleLogout() {
+    supabase.auth.signOut();
+  }
+
+  // 🔐 Afficher login si pas connecté
+  if (!user) {
+    return <Auth />;
+  }
 
   return (
-    <main className="max-w-2xl mx-auto mt-10">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Bienvenue 👋</h1>
-        <button
-          onClick={handleLogout}
-          className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600"
-        >
-          Déconnexion
-        </button>
+    <div style={{ padding: 20 }}>
+      <h1>GROWTH 🌱</h1>
+      <button onClick={handleLogout}>Se déconnecter</button>
+
+      <form onSubmit={handleSubmit}>
+        <input
+          placeholder="Exprime ton idée ici..."
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+        />
+        <button type="submit">Publier</button>
+      </form>
+
+      <div style={{ marginTop: 20 }}>
+        {posts.map((post) => (
+          <div key={post.id}>
+            <p>{post.content}</p>
+            <small>
+              Publié par {post.user_name} –{" "}
+              {new Date(post.created_at).toLocaleString("fr-FR")}
+            </small>
+            <hr />
+          </div>
+        ))}
       </div>
-      <p className="text-gray-700 mb-6">
-        Connecté en tant que : <strong>{session.user.email}</strong>
-      </p>
-      {/* 👉 Ici tu peux mettre ton interface de posts */}
-    </main>
+    </div>
   );
 }
